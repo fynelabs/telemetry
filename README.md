@@ -10,20 +10,20 @@ user across new invocations of your app.
 This is designed to be dropped into a [Fyne](https://fyne.io) app simply:
 
 ```go
-	a := app.NewWithID("com.example.myapp")
-	t := telemetry.Init(a, "ACCESSCODE")
+a := app.NewWithID("com.example.myapp")
+t := telemetry.Init(a, "ACCESSCODE")
 ```
 
 And then you can report telemetry events simply as:
 
 ```go
-    t.Event("eventname")
+t.Event("eventname")
 ```
 
 Or report errors
 
 ```go
-    t.Error(err)
+t.Error(err)
 ```
 
 The library will work out the stack trace for your error and upload that too!
