@@ -65,6 +65,8 @@ func (t *Telemetry) Close() {
 	t.sessionEnd()
 }
 
+// Error reports an error to the telemetry server.
+// It will generate a stack trace starting at the function that called this method.
 func (t *Telemetry) Error(err error) {
 	log := err.Error()
 
@@ -82,10 +84,14 @@ func (t *Telemetry) Error(err error) {
 	t.send("error?detail=%s&stack=%s&session=%s", log, encoded, t.session)
 }
 
+// Event logs a named event to the telemetry server.
+// Event names should be unique to your application for correct counting.
 func (t *Telemetry) Event(id string) {
 	t.send("event?name=%s&session=%s", id, t.session)
 }
 
+// UserInfo allows an app to provide a username and/or email to associate with a user.
+// This data will be connected to all sessions for the current user.
 func (t *Telemetry) UserInfo(username, email string) {
 	t.send("user?uuid=%s&username=%s&email=%s", t.user, username, email)
 }
