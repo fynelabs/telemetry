@@ -39,7 +39,7 @@ func Init(a fyne.App, accessCode string) *Telemetry {
 		a.Preferences().SetString(prefUserKey, user)
 	}
 
-	return InitWithID(id, session.String(), user, accessCode)
+	return InitWithID(id, user, session.String(), accessCode)
 }
 
 // InitWithID opens a new telemetry instance and logs the start of a new session.
