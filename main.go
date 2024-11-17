@@ -97,29 +97,31 @@ func (t *Telemetry) UserInfo(username, email string) {
 }
 
 func (t *Telemetry) send(path string, params ...any) {
-	go func() {
-		url := fmt.Sprintf(t.server+"/api/v1/"+path, params...)
-		r, err := http.Get(url)
+	go t.sendWait(path, params...)
+}
 
-		if err != nil {
-			log.Println("Failed to send telemetry", err)
-			return
-		}
+func (t *Telemetry) sendWait(path string, params ...any) {
+	url := fmt.Sprintf(t.server+"/api/v1/"+path, params...)
+	r, err := http.Get(url)
 
-		data, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println("Body read error", err)
-			return
-		}
-		r.Body.Close()
-		if len(data) > 0 {
-			log.Println("Body returned:", string(data))
-		}
-	}()
+	if err != nil {
+		log.Println("Failed to send telemetry", err)
+		return
+	}
+
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Body read error", err)
+		return
+	}
+	r.Body.Close()
+	if len(data) > 0 {
+		log.Println("Body returned:", string(data))
+	}
 }
 
 func (t *Telemetry) sessionEnd() {
-	t.send("sessionend?uuid=%s", t.session)
+	t.sendWait("sessionend?uuid=%s", t.session)
 }
 
 func (t *Telemetry) sessionStart(id string) {
