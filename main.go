@@ -48,8 +48,15 @@ func Init(a fyne.App, accessCode string) *Telemetry {
 // and the session should be unique for every invocation.
 // The `accessCode“ is the developer code for accessing Fyne Labs telemetry service.
 func InitWithID(appID, user, session, accessCode string) *Telemetry {
+	t := initTelemetry(appID, session, accessCode)
+	t.user = user
+
+	return t
+}
+
+func initTelemetry(appID, session, accessCode string) *Telemetry {
 	t := &Telemetry{AccessCode: accessCode, AppID: appID,
-		user: user, server: "https://xavier.fynelabs.com"}
+		server: "https://xavier.fynelabs.com"}
 
 	if env := os.Getenv("TELEMETRY_SERVER"); env != "" {
 		t.server = env
@@ -68,6 +75,10 @@ func (t *Telemetry) Close() {
 // Error reports an error to the telemetry server.
 // It will generate a stack trace starting at the function that called this method.
 func (t *Telemetry) Error(err error) {
+	t.sendError(err, t.session)
+}
+
+func (t *Telemetry) sendError(err error, session string) {
 	log := err.Error()
 
 	stack := ""
