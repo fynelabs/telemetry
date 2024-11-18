@@ -86,8 +86,8 @@ func (t *Telemetry) Error(err error) {
 
 // Event logs a named event to the telemetry server.
 // Event names should be unique to your application for correct counting.
-func (t *Telemetry) Event(id string) {
-	t.send("event?name=%s&session=%s", id, t.session)
+func (t *Telemetry) Event(name string) {
+	t.send("event?name=%s&session=%s", name, t.session)
 }
 
 // UserInfo allows an app to provide a username and/or email to associate with a user.
