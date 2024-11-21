@@ -48,13 +48,13 @@ func Init(a fyne.App, accessCode string) *Telemetry {
 // and the session should be unique for every invocation.
 // The `accessCode“ is the developer code for accessing Fyne Labs telemetry service.
 func InitWithID(appID, user, session, accessCode string) *Telemetry {
-	t := initTelemetry(appID, user, session, accessCode)
+	t := initTelemetry(appID, user, session, accessCode, true)
 	t.user = user
 
 	return t
 }
 
-func initTelemetry(appID, user, session, accessCode string) *Telemetry {
+func initTelemetry(appID, user, session, accessCode string, native bool) *Telemetry {
 	t := &Telemetry{AccessCode: accessCode, AppID: appID, user: user,
 		server: "https://xavier.fynelabs.com"}
 
@@ -62,7 +62,7 @@ func initTelemetry(appID, user, session, accessCode string) *Telemetry {
 		t.server = env
 	}
 
-	t.sessionStart(session)
+	t.sessionStart(session, native)
 	return t
 }
 
@@ -135,8 +135,15 @@ func (t *Telemetry) sessionEnd() {
 	t.sendWait("sessionend?uuid=%s", t.session)
 }
 
-func (t *Telemetry) sessionStart(id string) {
+func (t *Telemetry) sessionStart(id string, native bool) {
 	t.session = id
 
-	t.send("session?uuid=%s&appID=%s&user=%s", id, t.AppID, t.user)
+	device := ""
+	if native {
+		device = fmt.Sprintf("os=%s&arch=%s", runtime.GOOS, runtime.GOARCH)
+	} else {
+		device = "device=server"
+	}
+
+	t.send("session?uuid=%s&appID=%s&user=%s&%s", id, t.AppID, t.user, device)
 }
