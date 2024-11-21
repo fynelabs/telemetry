@@ -19,6 +19,7 @@ type Telemetry struct {
 	AccessCode string
 	AppID      string
 
+	client        *http.Client
 	server        string
 	session, user string
 }
@@ -56,7 +57,7 @@ func InitWithID(appID, user, session, accessCode string) *Telemetry {
 
 func initTelemetry(appID, user, session, accessCode string, native bool) *Telemetry {
 	t := &Telemetry{AccessCode: accessCode, AppID: appID, user: user,
-		server: "https://xavier.fynelabs.com"}
+		server: "https://xavier.fynelabs.com", client: &http.Client{}}
 
 	if env := os.Getenv("TELEMETRY_SERVER"); env != "" {
 		t.server = env
@@ -113,7 +114,10 @@ func (t *Telemetry) send(path string, params ...any) {
 
 func (t *Telemetry) sendWait(path string, params ...any) {
 	url := fmt.Sprintf(t.server+"/api/v1/"+path, params...)
-	r, err := http.Get(url)
+
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("AccessCode", t.AccessCode)
+	r, err := t.client.Do(req)
 
 	if err != nil {
 		log.Println("Failed to send telemetry", err)
