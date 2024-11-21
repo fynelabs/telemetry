@@ -48,14 +48,14 @@ func Init(a fyne.App, accessCode string) *Telemetry {
 // and the session should be unique for every invocation.
 // The `accessCode“ is the developer code for accessing Fyne Labs telemetry service.
 func InitWithID(appID, user, session, accessCode string) *Telemetry {
-	t := initTelemetry(appID, session, accessCode)
+	t := initTelemetry(appID, user, session, accessCode)
 	t.user = user
 
 	return t
 }
 
-func initTelemetry(appID, session, accessCode string) *Telemetry {
-	t := &Telemetry{AccessCode: accessCode, AppID: appID,
+func initTelemetry(appID, user, session, accessCode string) *Telemetry {
+	t := &Telemetry{AccessCode: accessCode, AppID: appID, user: user,
 		server: "https://xavier.fynelabs.com"}
 
 	if env := os.Getenv("TELEMETRY_SERVER"); env != "" {

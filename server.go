@@ -11,7 +11,7 @@ type ServerTelemetry struct {
 // The `accessCode“ is the developer code for accessing Fyne Labs telemetry service.
 func InitServer(appID, accessCode string) *ServerTelemetry {
 	session := uuid.New().String() // just a random new session for the "server" context
-	return &ServerTelemetry{Telemetry: initTelemetry(appID, session, accessCode)}
+	return &ServerTelemetry{Telemetry: initTelemetry(appID, "", session, accessCode)}
 }
 
 // ClientError reports an error to the telemetry server for the specified user session.
