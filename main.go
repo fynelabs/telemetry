@@ -92,14 +92,17 @@ func (t *Telemetry) sendError(err error, session string) {
 		stack += fmt.Sprintf("  %s:%d\n", file, line)
 	}
 
-	encoded := url.QueryEscape(stack)
-	t.send("error?detail=%s&stack=%s&session=%s", log, encoded, t.session)
+	t.send("error?detail=%s&stack=%s&session=%s", url.QueryEscape(log), url.QueryEscape(stack), t.session)
 }
 
 // Event logs a named event to the telemetry server.
 // Event names should be unique to your application for correct counting.
 func (t *Telemetry) Event(name string) {
 	t.send("event?name=%s&session=%s", name, t.session)
+}
+
+func (t *Telemetry) Feedback(f Feeling, info string) {
+	t.send("feedback?feeling=%d&detail=%s&session=%s", f, url.QueryEscape(info), t.session)
 }
 
 // UserInfo allows an app to provide a username and/or email to associate with a user.
