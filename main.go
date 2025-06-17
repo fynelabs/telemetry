@@ -22,13 +22,20 @@ type Telemetry struct {
 	client        *http.Client
 	server        string
 	session, user string
+
+	a               fyne.App
+	email, username string // local cache to see if we have user info
 }
 
-const prefUserKey = "fynelabs.telemetry.user"
+const (
+	prefUserKey     = "fynelabs.telemetry.user"
+	prefUsernameKey = "fynelabs.telemetry.username"
+	prefEmailKey    = "fynelabs.telemetry.email"
+)
 
 // Init opens a new telemetry instance and logs the start of a new session.
 // It uses the Fyne app to get the App ID and handle user uniqueness.
-// The `accessCode“ is the developer code for accessing Fyne Labs telemetry service.
+// The `accessCode` is the developer code for accessing Fyne Labs telemetry service.
 func Init(a fyne.App, accessCode string) *Telemetry {
 	id := a.UniqueID()
 
@@ -40,7 +47,14 @@ func Init(a fyne.App, accessCode string) *Telemetry {
 		a.Preferences().SetString(prefUserKey, user)
 	}
 
-	return InitWithID(id, user, session.String(), accessCode)
+	username := a.Preferences().String(prefUsernameKey)
+	email := a.Preferences().String(prefEmailKey)
+
+	t := InitWithID(id, user, session.String(), accessCode)
+	t.username = username
+	t.email = email
+	t.a = a
+	return t
 }
 
 // InitWithID opens a new telemetry instance and logs the start of a new session.
@@ -79,6 +93,11 @@ func (t *Telemetry) Error(err error) {
 	t.sendError(err, t.session)
 }
 
+// HasUserInfo returns true if the current user has information (email or username) set.
+func (t *Telemetry) HasUserInfo() bool {
+	return t.email != "" || t.username != ""
+}
+
 func (t *Telemetry) sendError(err error, session string) {
 	log := err.Error()
 
@@ -108,6 +127,18 @@ func (t *Telemetry) Feedback(f Feeling, info string) {
 // UserInfo allows an app to provide a username and/or email to associate with a user.
 // This data will be connected to all sessions for the current user.
 func (t *Telemetry) UserInfo(username, email string) {
+	if username != "" {
+		t.username = username
+		if t.a != nil {
+			t.a.Preferences().SetString(prefUsernameKey, username)
+		}
+	}
+	if email != "" {
+		t.email = email
+		if t.a != nil {
+			t.a.Preferences().SetString(prefEmailKey, email)
+		}
+	}
 	t.send("user?uuid=%s&username=%s&email=%s", t.user, username, email)
 }
 

@@ -26,10 +26,20 @@ func ShowFeedback(t *telemetry.Telemetry, w fyne.Window) {
 		}
 
 		t.Feedback(send.Feeling, send.Detail)
-	}, w)
-}
 
-func ShowCustomFeedback(t *telemetry.Telemetry, cb func(d *data), w fyne.Window) {
+		if !t.HasUserInfo() {
+			email := widget.NewEntry()
+			dialog.ShowForm("Can we contact you about this?", "Yes", "No",
+				[]*widget.FormItem{
+					widget.NewFormItem("Email", email),
+				},
+				func(ok bool) {
+					if ok && email.Text != "" {
+						t.UserInfo("", email.Text)
+					}
+				}, w)
+		}
+	}, w)
 }
 
 func makeUI(cb func(data)) fyne.CanvasObject {
