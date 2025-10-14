@@ -87,31 +87,9 @@ func (t *Telemetry) Close() {
 	t.sessionEnd()
 }
 
-// Error reports an error to the telemetry server.
-// It will generate a stack trace starting at the function that called this method.
-func (t *Telemetry) Error(err error) {
-	t.sendError(err, t.session)
-}
-
 // HasUserInfo returns true if the current user has information (email or username) set.
 func (t *Telemetry) HasUserInfo() bool {
 	return t.email != "" || t.username != ""
-}
-
-func (t *Telemetry) sendError(err error, session string) {
-	log := err.Error()
-
-	stack := ""
-	for i := 0; ; i++ {
-		_, file, line, ok := runtime.Caller(i + 1)
-		if !ok {
-			break
-		}
-
-		stack += fmt.Sprintf("  %s:%d\n", file, line)
-	}
-
-	t.send("error?detail=%s&stack=%s&session=%s", url.QueryEscape(log), url.QueryEscape(stack), t.session)
 }
 
 // Event logs a named event to the telemetry server.
