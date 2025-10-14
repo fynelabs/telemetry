@@ -14,6 +14,9 @@ type data struct {
 	Detail  string
 }
 
+// ShowFeedback opens a panel where your users can pick a mood and enter a short item of text for feedback.
+// If their session does not have any user information they will also be asked a follow-up to see if they are
+// happy to be contacted about their comment.
 func ShowFeedback(t *telemetry.Telemetry, w fyne.Window) {
 	var send data
 	dialog.ShowCustomConfirm("Send Feedback", "Send", "Cancel", makeUI(
