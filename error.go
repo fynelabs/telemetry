@@ -1,7 +1,6 @@
 package telemetry
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"runtime"
@@ -21,15 +20,18 @@ func (t *Telemetry) Error(err error) {
 func (t *Telemetry) Run(a fyne.App) {
 	defer func() {
 		if r := recover(); r != nil {
-			err := errors.New(fmt.Sprintf("%v", r))
+			err := fmt.Errorf("%v", r)
 			fyne.LogError("Handling panic", err)
 
 			t.Error(err)
 			debug.PrintStack()
+
+			t.Close()
 		}
 	}()
 
 	a.Run()
+	t.Close()
 }
 
 // ShowAndRun wraps the standard fyne Window.ShowAndRun() with a crash reporting wrapper.
