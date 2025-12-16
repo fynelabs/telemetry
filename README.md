@@ -1,6 +1,6 @@
 # Telemetry
 
-> This repository has now moved to the ApptrixAI organisation, development continues [over there](/ApptrixAI/telemetry).
+> This repository has now moved to the ApptrixAI organisation, development continues [over there](https://github.com/ApptrixAI/telemetry).
 
 A simple library for reporting data to the Fyne labs telemetry server.
 
