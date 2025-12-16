@@ -1,5 +1,7 @@
 # Telemetry
 
+> This repository has now moved to the ApptrixAI organisation, development continues [over there](/ApptrixAI/telemetry).
+
 A simple library for reporting data to the Fyne labs telemetry server.
 
 Telemetry will track user sessions and aim to determine if it is the same
